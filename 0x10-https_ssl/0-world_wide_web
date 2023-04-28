@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+#Configure domain and subdomain zone in www and display information about subdomains
+
+
+dns_info() {
+
+	dig $2.$1 | awk 'c&&!--c;/;; ANSWER SECTION:/{c=1}' | awk -v subdomain=$2 '{print "The subdomain " subdomain " is a " $4 " record and points to " $5 }'
+	return 0
+}
+subdomains=("www" "lb-01" "web-01" "web-02")
+
+for subdomain in "${subdomains[@]}"
+do
+	if [ -z "$2" ] || [ "$2" == "$subdomain" ] ;
+	then
+		dns_info "$1" "$subdomain"
+	fi
+done
